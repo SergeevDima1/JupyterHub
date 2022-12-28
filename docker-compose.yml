@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Hub and proxy configuration
+  jupyterhub:
+    build: jupyterhub
+    image: jupyterhub_img
+    container_name: jupyterhub
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - jupyterhub_data:/srv/jupyterhub
+    environment:
+      DOCKER_NOTEBOOK_DIR: /home
+      DOCKER_JUPYTER_IMAGE: jupyterlab_img
+      DOCKER_NETWORK_NAME: ${COMPOSE_PROJECT_NAME}_default
+
+      HUB_IP: jupyterhub
+    restart: on-failure
+    ports:
+      - "80:8000"
+
+  # single-user containers configuration
+  jupyterlab:
+    build: jupyterlab
+    image: jupyterlab_img
+    network_mode: none
+    command: echo
+
+volumes:
+  jupyterhub_data:
